@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .container {
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        h1 {
+            margin-top: 20px;
+        }
+
+        p {
+            font-size: 1.1rem;
+            color: #555;
+            margin: 10px 0;
+        }
+
+        .price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 15px;
+            background-color: #007BFF;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .back-link:hover {
+            background-color: #0056b3;
+        }
+
+        .tab-container {
+            margin-top: 30px;
+        }
+
+        .tab-buttons {
+            display: flex;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .tab-buttons button {
+            background: none;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .tab-buttons button.active {
+            border-bottom: 2px solid #007BFF;
+            color: #007BFF;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 20px 0;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .ticket-option {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+
+        .ticket-option p {
+            margin: 5px 0;
+            font-size: 1rem;
+        }
+
+        .ticket-option input {
+            width: 60px;
+            padding: 5px;
+            margin-right: 10px;
+            text-align: center;
+        }
+
+        .buy-tickets-btn {
+            margin-top: 20px;
+            padding: 10px 15px;
+            background-color: #28a745;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .buy-tickets-btn:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Event Details</h1>
+    </header>
+
+    <div class="container">
+        <img id="event-image" src="" alt="Event Image">
+        <h1 id="event-title"></h1>
+        <p id="event-date"></p>
+        <p class="price" id="event-price"></p>
+        <p id="event-organizer"></p>
+        <p id="event-description"></p>
+
+        <div class="tab-container">
+            <div class="tab-buttons">
+                <button class="tab-button active" onclick="showTab('description')">Deskripsi</button>
+                <button class="tab-button" onclick="showTab('tickets')">Tiket</button>
+            </div>
+
+            <div id="description" class="tab-content active">
+                <h2>Event Description</h2>
+                <p id="event-full-description"></p>
+            </div>
+
+            <div id="tickets" class="tab-content">
+                <h2>Available Tickets</h2>
+                <div id="ticket-options">
+                    <!-- Tickets will be dynamically populated -->
+                </div>
+                <a href="#" class="buy-tickets-btn" onclick="proceedToCheckout()">Beli Tiket</a>
+            </div>
+        </div>
+
+        <a href="index.html" class="back-link">Back to Events</a>
+    </div>
+
+    <script>
+        const events = {
+            1: {
+                title: 'Music Fiesta 2024',
+                date: 'January 20, 2024',
+                price: '$50',
+                organizer: 'XYZ Productions',
+                image: 'event1.jpg',
+                description: 'Join us for an unforgettable night of music featuring top bands and artists.',
+                fullDescription: 'This event will bring together renowned artists from across the globe. Enjoy a night of unforgettable melodies and a fantastic crowd!',
+                tickets: [
+                    { name: 'Presale 1', price: '$50' },
+                    { name: 'Presale 1 + T-Shirt (Size M)', price: '$70' },
+                    { name: 'VIP Package', price: '$100' }
+                ]
+            },
+            2: {
+                title: 'Art & Soul Festival',
+                date: 'February 15, 2024',
+                price: '$40',
+                organizer: 'ABC Events',
+                image: 'event2.jpg',
+                description: 'Experience the fusion of art and music at the Art & Soul Festival.',
+                fullDescription: 'Celebrate creativity and culture with a mix of art exhibitions, live music, and performances.',
+                tickets: [
+                    { name: 'General Admission', price: '$40' },
+                    { name: 'VIP + Backstage Pass', price: '$90' }
+                ]
+            },
+        };
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const eventId = urlParams.get('id');
+
+        const event = events[eventId];
+        if (event) {
+            document.getElementById('event-image').src = event.image;
+            document.getElementById('event-title').textContent = event.title;
+            document.getElementById('event-date').textContent = 'Date: ' + event.date;
+            document.getElementById('event-price').textContent = 'Price: ' + event.price;
+            document.getElementById('event-organizer').textContent = 'Organizer: ' + event.organizer;
+            document.getElementById('event-description').textContent = event.description;
+            document.getElementById('event-full-description').textContent = event.fullDescription;
+
+            const ticketContainer = document.getElementById('ticket-options');
+            ticketContainer.innerHTML = '';
+
+            event.tickets.forEach((ticket, index) => {
+                const ticketElement = document.createElement('div');
+                ticketElement.className = 'ticket-option';
+                ticketElement.innerHTML = `
+                    <p><strong>${ticket.name}</strong></p>
+                    <p>Price: ${ticket.price}</p>
+                    <input type="number" id="ticket-quantity-${index}" min="1" max="10" placeholder="Qty">
+                `;
+                ticketContainer.appendChild(ticketElement);
+            });
+        } else {
+            document.body.innerHTML = '<h1 style="text-align: center; margin-top: 50px;">Event not found</h1>';
+        }
+
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        function proceedToCheckout() {
+            const selectedTickets = [];
+            const quantities = document.querySelectorAll('[id^="ticket-quantity-"]');
+            quantities.forEach((input, index) => {
+                const quantity = parseInt(input.value);
+                if (!isNaN(quantity) && quantity > 0) {
+                    selectedTickets.push({
+                        ticketName: event.tickets[index].name,
+                        quantity: quantity,
+                        price: event.tickets[index].price
+                    });
+                }
+            });
+
+            if (selectedTickets.length > 0) {
+                // Store selected tickets in local storage or pass them to the next page
+                localStorage.setItem('selectedTickets', JSON.stringify(selectedTickets));
+
+                // Redirect to the checkout page
+                window.location.href = `checkout.html?id=${eventId}`;
+            } else {
+                alert('Please select at least one ticket and enter the quantity.');
+            }
+        }
+    </script>
+</body>
+</html>
+
+                       

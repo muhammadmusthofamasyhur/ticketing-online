@@ -1,15 +1,14 @@
 <?php
-// Variable untuk koneksi ke MySQL
-$host = "localhost";
+$servername = "localhost";
 $username = "root";
 $password = "";
-$databasename = "pwd";
+$dbname = "ticketing-online";
 
-// Syntax untuk koneksi ke MySQL
-$con = mysqli_connect($host, $username, $password, $databasename);
+// Create connection
+$conn = mysqli_connect($servername, $username, $password, $dbname);
 
-// Perkondisian jika gagal konek ke MySQL
-if (!$con) {
-    echo "Error: " . mysqli_connect_error();
-    exit();
+// Check connection
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
 }
+?>

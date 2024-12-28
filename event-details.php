@@ -1,3 +1,17 @@
+<?php
+include 'koneksi.php';
+
+$eventId = $_GET['id'];
+$query = "SELECT * FROM event WHERE id = $eventId";
+$result = mysqli_query($conn, $query);
+$event = mysqli_fetch_assoc($result);
+
+if (!$event) {
+    echo '<h1 style="text-align: center; margin-top: 50px;">Event not found</h1>';
+    exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -134,12 +148,11 @@
     </header>
 
     <div class="container">
-        <img id="event-image" src="" alt="Event Image">
-        <h1 id="event-title"></h1>
-        <p id="event-date"></p>
-        <p class="price" id="event-price"></p>
-        <p id="event-organizer"></p>
-        <p id="event-description"></p>
+        <img id="event-image" src="cover/<?php echo $event['cover']; ?>" alt="Event Image">
+        <h1 id="event-title"><?php echo $event['name']; ?></h1>
+        <p id="event-date">Date: <?php echo $event['date']; ?></p>
+        <p class="price" id="event-price">Price: $<?php echo $event['price']; ?></p>
+        <p id="event-organizer">Organizer: <?php echo $event['organizer']; ?></p>
 
         <div class="tab-container">
             <div class="tab-buttons">
@@ -149,7 +162,7 @@
 
             <div id="description" class="tab-content active">
                 <h2>Event Description</h2>
-                <p id="event-full-description"></p>
+                <p id="event-full-description"><?php echo $event['description']; ?></p>
             </div>
 
             <div id="tickets" class="tab-content">
@@ -161,70 +174,10 @@
             </div>
         </div>
 
-        <a href="index.html" class="back-link">Back to Events</a>
+        <a href="index.php" class="back-link">Back to Events</a>
     </div>
 
     <script>
-        const events = {
-            1: {
-                title: 'Music Fiesta 2024',
-                date: 'January 20, 2024',
-                price: '$50',
-                organizer: 'XYZ Productions',
-                image: 'event1.jpg',
-                description: 'Join us for an unforgettable night of music featuring top bands and artists.',
-                fullDescription: 'This event will bring together renowned artists from across the globe. Enjoy a night of unforgettable melodies and a fantastic crowd!',
-                tickets: [
-                    { name: 'Presale 1', price: '$50' },
-                    { name: 'Presale 1 + T-Shirt (Size M)', price: '$70' },
-                    { name: 'VIP Package', price: '$100' }
-                ]
-            },
-            2: {
-                title: 'Art & Soul Festival',
-                date: 'February 15, 2024',
-                price: '$40',
-                organizer: 'ABC Events',
-                image: 'event2.jpg',
-                description: 'Experience the fusion of art and music at the Art & Soul Festival.',
-                fullDescription: 'Celebrate creativity and culture with a mix of art exhibitions, live music, and performances.',
-                tickets: [
-                    { name: 'General Admission', price: '$40' },
-                    { name: 'VIP + Backstage Pass', price: '$90' }
-                ]
-            },
-        };
-
-        const urlParams = new URLSearchParams(window.location.search);
-        const eventId = urlParams.get('id');
-
-        const event = events[eventId];
-        if (event) {
-            document.getElementById('event-image').src = event.image;
-            document.getElementById('event-title').textContent = event.title;
-            document.getElementById('event-date').textContent = 'Date: ' + event.date;
-            document.getElementById('event-price').textContent = 'Price: ' + event.price;
-            document.getElementById('event-organizer').textContent = 'Organizer: ' + event.organizer;
-            document.getElementById('event-description').textContent = event.description;
-            document.getElementById('event-full-description').textContent = event.fullDescription;
-
-            const ticketContainer = document.getElementById('ticket-options');
-            ticketContainer.innerHTML = '';
-
-            event.tickets.forEach((ticket, index) => {
-                const ticketElement = document.createElement('div');
-                ticketElement.className = 'ticket-option';
-                ticketElement.innerHTML = `
-                    <p><strong>${ticket.name}</strong></p>
-                    <p>Price: ${ticket.price}</p>
-                    <input type="number" id="ticket-quantity-${index}" min="1" max="10" placeholder="Qty">
-                `;
-                ticketContainer.appendChild(ticketElement);
-            });
-        } else {
-            document.body.innerHTML = '<h1 style="text-align: center; margin-top: 50px;">Event not found</h1>';
-        }
-
         function showTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
@@ -250,7 +203,7 @@
                 localStorage.setItem('selectedTickets', JSON.stringify(selectedTickets));
 
                 // Redirect to the checkout page
-                window.location.href = `checkout.html?id=${eventId}`;
+                window.location.href = `checkout.php?id=<?php echo $eventId; ?>`;
             } else {
                 alert('Please select at least one ticket and enter the quantity.');
             }
@@ -258,5 +211,3 @@
     </script>
 </body>
 </html>
-
-                       
